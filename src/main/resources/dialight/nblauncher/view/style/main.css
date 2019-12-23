@@ -1,0 +1,13 @@
+
+#root{
+    -fx-background-image: url("../img/background.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: cover;
+}
+.split-pane {
+   -fx-background-color: transparent;
+}
+.list-view {
+    -fx-background-color: transparent;
+}
