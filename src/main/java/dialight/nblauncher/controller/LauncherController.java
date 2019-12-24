@@ -377,7 +377,7 @@ public class LauncherController extends Controller {
 
             List<String> args = new ArrayList<>();
 
-            args.add("/usr/lib/jvm/jdk1.8.0_231/bin/java");
+            args.add("java");
             args.add("-Xss1M");
 
             args.addAll(arguments.bakeJvmArgs(key -> {
