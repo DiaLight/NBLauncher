@@ -23,13 +23,24 @@ public class ArgumentsTypeAdapter implements JsonDeserializer<Arguments> {
         if (json.isJsonPrimitive()) { ;
             return new Arguments(
                     Arrays.stream(json.getAsString().split(" ")).map(StringArg::new).collect(Collectors.toList()),
-                    Collections.emptyList()
+                    Collections.emptyList(),
+                    true
             );
         }
         JsonObject arguments = json.getAsJsonObject();
-        List<ArgPart> game = parseArgParts(context, arguments.getAsJsonArray("game"));
-        List<ArgPart> jvm = parseArgParts(context, arguments.getAsJsonArray("jvm"));
-        return new Arguments(game, jvm);
+        List<ArgPart> game;
+        if(arguments.has("game")) {
+            game = parseArgParts(context, arguments.getAsJsonArray("game"));
+        } else {
+            game = Collections.emptyList();
+        }
+        List<ArgPart> jvm;
+        if (arguments.has("jvm")) {
+            jvm = parseArgParts(context, arguments.getAsJsonArray("jvm"));
+        } else {
+            jvm = Collections.emptyList();
+        }
+        return new Arguments(game, jvm, false);
     }
 
     private List<ArgPart> parseArgParts(JsonDeserializationContext ctx, JsonArray gameJes) {

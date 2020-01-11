@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 import java.util.UUID;
 
-public class MinecraftProfile {
+public class MinecraftAccount {
 
     @SerializedName("name")
     private final String name;
@@ -16,7 +16,7 @@ public class MinecraftProfile {
     @SerializedName("accessToken")
     private final String accessToken;
 
-    public MinecraftProfile(String name, UUID uuid, String clientToken, String accessToken) {
+    public MinecraftAccount(String name, UUID uuid, String clientToken, String accessToken) {
         this.name = name;
         this.uuid = uuid;
         this.clientToken = clientToken;
@@ -51,7 +51,7 @@ public class MinecraftProfile {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MinecraftProfile that = (MinecraftProfile) o;
+        MinecraftAccount that = (MinecraftAccount) o;
         return uuid.equals(that.uuid);
     }
 

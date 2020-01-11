@@ -17,7 +17,9 @@ public class ProgressController extends Controller {
 
     private void onFinish() {
         if(!taskQueue.isEmpty()) {
-            service.start();
+            if (service.getState() == Worker.State.READY) {
+                service.start();
+            }
         }
     }
 

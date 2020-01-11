@@ -11,3 +11,33 @@
 .list-view {
     -fx-background-color: transparent;
 }
+
+#settings_button {
+    -fx-background-image: url("../img/gear.png");
+    -fx-background-size: 24px 24px;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+#settings_button:selected {
+    -fx-background-image: url("../img/gear.png");
+    -fx-background-size: 24px 24px;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+#back_button {
+    -fx-background-image: url("../img/back.png");
+    -fx-background-size: 24px 24px;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+.list-view .list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+.list-view {
+    -fx-selection-bar: palegreen;
+    -fx-selection-bar-non-focused: palegreen;
+}

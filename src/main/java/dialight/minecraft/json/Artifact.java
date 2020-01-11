@@ -15,11 +15,11 @@ import java.util.function.BiConsumer;
 public class Artifact {
 
     @SerializedName("url")
-    private final String url;
+    private String url;
     @SerializedName("sha1")
-    private final String sha1;
+    private String sha1;
     @SerializedName("size")
-    private final int size;
+    private int size = 0;
 
     public Artifact() {
         this(null);

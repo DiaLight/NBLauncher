@@ -35,6 +35,7 @@ dependencies {
     compile("com.google.code.gson:gson:${findProperty("gson.version")}")
     implementation("org.jetbrains:annotations:${findProperty("jetbrains.annotations.version")}")
     implementation(files(findProperty("scenicView.path")))
+    implementation("org.fxmisc.cssfx:cssfx:1.1.1")
 }
 
 java {

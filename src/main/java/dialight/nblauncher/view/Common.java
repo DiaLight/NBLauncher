@@ -32,6 +32,7 @@ public class Common extends View {
     public void setView(View view) {
         viewRoot.getChildren().clear();
         viewRoot.getChildren().add(view.getRoot());
+        view.getRoot().requestFocus();
     }
 
 }

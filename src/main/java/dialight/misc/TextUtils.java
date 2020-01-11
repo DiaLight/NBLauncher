@@ -7,6 +7,9 @@ import java.util.List;
 
 public class TextUtils {
 
+    public static String readText(InputStream is) {
+        return readText(is, Charset.defaultCharset());
+    }
     public static String readText(InputStream is, Charset charset) {
         return readText(new InputStreamReader(is, charset));
     }

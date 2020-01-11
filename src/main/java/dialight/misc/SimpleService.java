@@ -47,6 +47,8 @@ public class SimpleService<T> extends Service<T> {
                 Consumer<T> consumer = onDone.get();
                 if(consumer != null) consumer.accept(getValue());
                 getTask().uiDone(getValue());
+                Throwable exception = getException();
+                if(exception != null) getTask().uiError(exception);
                 reset();
                 Platform.runLater(onFinish);
             }

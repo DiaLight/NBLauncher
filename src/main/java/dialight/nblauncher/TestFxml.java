@@ -1,7 +1,6 @@
 package dialight.nblauncher;
 
 import dialight.mvc.ViewDebug;
-import dialight.nblauncher.view.ProfilesView;
 import javafx.application.Application;
 
 import java.util.ArrayList;

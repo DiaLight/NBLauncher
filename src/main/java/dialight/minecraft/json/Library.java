@@ -1,9 +1,11 @@
 package dialight.minecraft.json;
 
 import com.google.gson.annotations.SerializedName;
+import dialight.minecraft.LibName;
 import dialight.minecraft.json.libs.Downloads;
 import dialight.minecraft.json.libs.Extract;
 import dialight.minecraft.json.libs.Rule;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,41 +15,36 @@ import java.util.function.BiPredicate;
 public class Library {
 
     @SerializedName("name")
-    private final String name;
+    private String name;
+
+    @SerializedName("url")
+    private String url;
 
     @SerializedName("downloads")
-    private final Downloads downloads;
+    private Downloads downloads;
 
     @SerializedName("natives")
-    private final Map<String, String> natives;
+    private Map<String, String> natives;
 
     @SerializedName("extract")
-    private final Extract extract;
+    private Extract extract;
 
     @SerializedName("rules")
-    private final List<Rule> rules;
+    private List<Rule> rules;
+
+    @SerializedName("downloadOnly")
+    private boolean downloadOnly = false;
+
+    @SerializedName("loadLast")
+    private boolean loadLast = false;
 
     public Library() {
-        this(null);
-    }
-    public Library(String name) {
-        this(name, null);
+
     }
 
-    public Library(String name, Downloads downloads) {
-        this(name, downloads, Collections.emptyMap());
-    }
-
-    public Library(String name, Downloads downloads, Map<String, String> natives) {
-        this(name, downloads, natives, null);
-    }
-
-    public Library(String name, Downloads downloads, Map<String, String> natives, Extract extract) {
-        this(name, downloads, natives, extract, Collections.emptyList());
-    }
-
-    public Library(String name, Downloads downloads, Map<String, String> natives, Extract extract, List<Rule> rules) {
+    public Library(String name, String url, Downloads downloads, Map<String, String> natives, Extract extract, List<Rule> rules) {
         this.name = name;
+        this.url = url;
         this.downloads = downloads;
         this.natives = natives;
         this.extract = extract;
@@ -77,6 +74,7 @@ public class Library {
     }
 
     public Map<String, String> getNatives() {
+        if(natives == null) return Collections.emptyMap();
         return natives;
     }
 
@@ -86,6 +84,66 @@ public class Library {
 
     public List<Rule> getRules() {
         return rules;
+    }
+
+    public boolean isDownloadOnly() {
+        return downloadOnly;
+    }
+
+    public boolean isLoadLast() {
+        return loadLast;
+    }
+
+    public String resolvePath() {
+        if(downloads != null) {
+            ArtifactWithPath artifact = downloads.getArtifact();
+            if(artifact != null) {
+                String path = artifact.getPath();
+                if(path != null) {
+                    if(!artifact.validatePath()) throw new IllegalStateException("bad path \"" + path + "\"");
+                    return path;
+                }
+            }
+        }
+        LibName name = LibName.parse(this.name);
+        return name.buildPath();
+    }
+
+    @Nullable public String resolveUrl() {
+        if(downloads != null) {
+            ArtifactWithPath artifact = downloads.getArtifact();
+            if(artifact != null) {
+                String url = artifact.getUrl();
+                if(url != null) return url;
+            }
+        }
+        if(url != null) {
+            if(url.endsWith("/")) {
+                return url + resolvePath();
+            }
+            return url + "/" + resolvePath();
+        }
+        return null;
+    }
+
+    public int resolveSize() {
+        if(downloads != null) {
+            ArtifactWithPath artifact = downloads.getArtifact();
+            if(artifact != null) {
+                return artifact.getSize();
+            }
+        }
+        return 0;
+    }
+
+    @Nullable public String resolveSha1() {
+        if(downloads != null) {
+            ArtifactWithPath artifact = downloads.getArtifact();
+            if(artifact != null) {
+                return artifact.getSha1();
+            }
+        }
+        return null;
     }
 
     @Override

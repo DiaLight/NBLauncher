@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 
 public class ViewDebug extends Application {
 
-    private static void tryRunScenicView(Scene scene) {
+    public static void tryRunScenicView(Scene scene) {
         Class<?> class_ScenicView = null;
         try {
             class_ScenicView = Class.forName("org.scenicview.ScenicView");
@@ -21,6 +21,20 @@ public class ViewDebug extends Application {
         try {
             Method m_ScenicView_show = class_ScenicView.getDeclaredMethod("show", Scene.class);
             m_ScenicView_show.invoke(null, scene);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void tryRunCssfx(Scene scene) {
+        Class<?> class_CSSFX = null;
+        try {
+            class_CSSFX = Class.forName("org.fxmisc.cssfx.CSSFX");
+        } catch (ClassNotFoundException ignore) {}
+        if(class_CSSFX == null) return;
+        try {
+            Method m_CSSFX_start = class_CSSFX.getDeclaredMethod("start", Scene.class);
+            m_CSSFX_start.invoke(null, scene);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }

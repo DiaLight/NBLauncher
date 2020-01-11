@@ -3,6 +3,7 @@ package dialight.misc;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.zip.CRC32;
 
 public class DigestUtils {
 
@@ -51,6 +52,16 @@ public class DigestUtils {
         }
     }
 
+    public static byte[] digest(String algorithm, byte[] data) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance(algorithm);
+            digest.update(data);
+            return digest.digest();
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     public static MessageDigest update(MessageDigest digest, InputStream is) throws IOException {
         byte[] buf = new byte[BUF_SIZE];
         int read;
@@ -62,6 +73,12 @@ public class DigestUtils {
 
     public static String sha1(File jar) {
         return toHex(DigestUtils.digest("SHA-1", jar));
+    }
+
+    public static String crc32(byte[] data) {
+        CRC32 crc32 = new CRC32();
+        crc32.update(data);
+        return String.format("%08X", crc32.getValue());
     }
 
 }

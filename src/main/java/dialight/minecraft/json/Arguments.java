@@ -17,12 +17,14 @@ import java.util.stream.Collectors;
 
 public class Arguments {
 
-    private final List<ArgPart> game;
-    private final List<ArgPart> jvm;
+    private List<ArgPart> game;
+    private List<ArgPart> jvm;
+    private boolean complete;
 
-    public Arguments(List<ArgPart> game, List<ArgPart> jvm) {
+    public Arguments(List<ArgPart> game, List<ArgPart> jvm, boolean complete) {
         this.game = game;
         this.jvm = jvm;
+        this.complete = complete;
     }
 
     public static List<String> bakeArgs(List<ArgPart> arguments, Function<String, String> keyMap, BiPredicate<String, Boolean> featureMatcher) {
@@ -54,6 +56,23 @@ public class Arguments {
         for (ArgPart part : jvm) {
             System.out.println(part);
         }
+    }
+
+    public void inherit(Arguments parent) {
+        if(this.complete) return;
+        if(parent.complete) this.complete = true;
+
+        if(game == null) game = new ArrayList<>();
+        if(!(game instanceof ArrayList)) game = new ArrayList<>(game);
+        if(parent.game != null) game.addAll(0, parent.game);
+
+        if(jvm == null) jvm = new ArrayList<>();
+        if(!(jvm instanceof ArrayList)) jvm = new ArrayList<>(jvm);
+        if(parent.jvm != null) jvm.addAll(0, parent.jvm);
+    }
+
+    public boolean isComplete() {
+        return this.complete;
     }
 
 }

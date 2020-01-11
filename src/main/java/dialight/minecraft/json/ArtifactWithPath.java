@@ -1,6 +1,7 @@
 package dialight.minecraft.json;
 
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.Nullable;
 
 public class ArtifactWithPath extends Artifact {
 
@@ -28,7 +29,7 @@ public class ArtifactWithPath extends Artifact {
         this.path = path;
     }
 
-    public String getPath() {
+    @Nullable public String getPath() {
         return path;
     }
 

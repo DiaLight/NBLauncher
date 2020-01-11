@@ -49,3 +49,6 @@ run
 
 # Scenic View
 scenicView.properties
+
+*.local
+local.*

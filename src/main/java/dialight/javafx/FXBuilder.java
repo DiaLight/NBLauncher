@@ -1,11 +1,11 @@
-package dialight.mvc;
+package dialight.javafx;
 
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
 import java.util.function.Consumer;
 
-public abstract class ViewBuilder {
+public abstract class FXBuilder {
 
     private Node current;
     private Pane currentAsPane;

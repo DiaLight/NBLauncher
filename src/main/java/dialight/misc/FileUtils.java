@@ -1,5 +1,6 @@
 package dialight.misc;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -7,6 +8,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
@@ -38,19 +40,20 @@ public class FileUtils {
     }
     public static boolean download(String url, File jar, BiConsumer<Long, Long> progress) {
         try {
-            URLConnection connection = new URL(url).openConnection();
-            connection.setUseCaches(false);
-            connection.setConnectTimeout(15000);
-            connection.setReadTimeout(15000);
+            URLConnection con = new URL(url).openConnection();
+            con.setUseCaches(false);
+            con.setRequestProperty("User-Agent", "NBLauncher");
+            con.setConnectTimeout(15000);
+            con.setReadTimeout(15000);
             try {
-                connection.connect();
+                con.connect();
             } catch (SocketTimeoutException ignore) {
                 return false;
             } finally {
 
             }
-            int total = connection.getContentLength();
-            try(InputStream is = connection.getInputStream()) {
+            int total = con.getContentLength();
+            try(InputStream is = con.getInputStream()) {
                 write(is, total, jar, progress);
             }
         } catch (IOException e) {
@@ -60,7 +63,7 @@ public class FileUtils {
         return true;
     }
 
-    @Nullable public static Manifest getManifest() {
+    @NotNull public static Manifest getManifest() {
         URLClassLoader cl = (URLClassLoader) FileUtils.class.getClassLoader();
         try {
             URL url = cl.findResource("META-INF/MANIFEST.MF");
@@ -69,8 +72,9 @@ public class FileUtils {
                 manifest.read(is);
             }
             return manifest;
-        } catch (IOException ignore) {}
-        return null;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

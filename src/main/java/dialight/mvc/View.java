@@ -1,6 +1,7 @@
 package dialight.mvc;
 
 import com.sun.javafx.application.LauncherImpl;
+import dialight.extensions.FXSearch;
 import dialight.nblauncher.Main;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -21,29 +22,9 @@ public abstract class View {
     public abstract Parent getRoot();
 
     public <T extends Node> T findById(String id) {
-        LinkedList<Node> read = new LinkedList<>();
-        LinkedList<Node> write = new LinkedList<>();
-        read.add(getRoot());
-        while(!read.isEmpty()) {
-            for (Node node : read) {
-//                System.out.println(node.getId());
-                if(Objects.equals(node.getId(), id)) return (T) node;
-                if(node instanceof Pane) {
-                    Pane pane = (Pane) node;
-                    write.addAll(pane.getChildren());
-                } else if(node instanceof SplitPane) {
-                    SplitPane pane = (SplitPane) node;
-                    write.addAll(pane.getItems());
-                } else {
-//                    System.out.println("  " + node.getClass().getSimpleName());
-                }
-            }
-            read.clear();
-            LinkedList<Node> tmp = write;
-            write = read;
-            read = tmp;
-        }
-        throw new IllegalStateException("element with id " + id + " not found");
+        Node node = FXSearch.findFirstById(getRoot(), id);
+        if(node == null) throw new IllegalStateException("element with id " + id + " not found");
+        return (T) node;
     }
 
     protected Parent createFromFxml() {
