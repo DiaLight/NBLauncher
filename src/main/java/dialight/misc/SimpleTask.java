@@ -6,12 +6,12 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class SimpleTask<T> extends Task<T> {
 
+    public SimpleTask() {
+
+    }
+
     public void uiInit() {};
 
     public void uiDone(@Nullable T value) {}
-
-    public void uiError(@Nullable Throwable e) {
-        ErrorDialog.show(e);
-    }
 
 }

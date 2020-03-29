@@ -82,6 +82,9 @@ public class Yggdrassil {
         if(answer.has("error")) {
             String error = answer.get("error").getAsString();
             String errorMessage = answer.get("errorMessage").getAsString();
+            if(error.equals("ForbiddenOperationException")) {
+                throw new ForbiddenOperationException(errorMessage);
+            }
             throw new IllegalStateException(error + ": " + errorMessage);
         }
         String clientToken = answer.get("clientToken").getAsString();

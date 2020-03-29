@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.*?>
-<?import javafx.scene.effect.*?>
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane fx:id="root" prefHeight="405.0" prefWidth="611.0" stylesheets="@style/main.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane fx:id="root" prefHeight="405.0" prefWidth="611.0" stylesheets="@style/main.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
    <children>
        <StackPane maxHeight="300.0" maxWidth="350.0" prefHeight="150.0" prefWidth="200.0">
            <children>
-               <Pane fx:id="body_bg" blendMode="LIGHTEN" opacity="0.63" style="-fx-background-color: azure;">
+               <Pane fx:id="body_bg" blendMode="LIGHTEN" opacity="0.84" style="-fx-background-color: azure;">
                    <effect>
                        <GaussianBlur />
                    </effect>

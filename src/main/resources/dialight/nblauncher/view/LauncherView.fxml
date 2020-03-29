@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="500.0" prefWidth="700.0" stylesheets="@style/main.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane prefHeight="500.0" prefWidth="700.0" stylesheets="@style/main.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <VBox fx:id="body" alignment="TOP_CENTER" BorderPane.alignment="CENTER">
          <children>
@@ -31,8 +29,8 @@
                   <Label text="Версия" GridPane.rowIndex="1" />
                   <Label text="Сборка" GridPane.rowIndex="2" />
                   <ComboBox fx:id="version_list" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <Label text="Профиль" />
-                  <ComboBox fx:id="profile_list" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
+                  <Label text="Тип игры" />
+                  <ComboBox fx:id="gametype_list" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
                </children>
             </GridPane>
             <Label fx:id="version_modifiers_label" minHeight="30.0" text="Модификаторы сборки" />
@@ -41,7 +39,7 @@
       </VBox>
    </center>
    <bottom>
-      <Button fx:id="start_button" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Start" BorderPane.alignment="CENTER">
+      <Button fx:id="start_button" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Играть" BorderPane.alignment="CENTER">
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>

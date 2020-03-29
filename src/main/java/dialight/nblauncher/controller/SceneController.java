@@ -39,6 +39,10 @@ public class SceneController extends Controller {
         this.stage = stage;
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     public Common getCommon() {
         return common;
     }
@@ -114,7 +118,10 @@ public class SceneController extends Controller {
         Manifest manifest = FileUtils.getManifest();
         Attributes attributes = manifest.getMainAttributes();
         String launcher_name = attributes.getValue("Implementation-Title");
-        stage.setTitle(launcher_name != null ? launcher_name : "test");
+        if(launcher_name == null) launcher_name = "test";
+        String launcher_version = attributes.getValue("Implementation-Version");
+        if(launcher_version == null) launcher_version = "0.0";
+        stage.setTitle(launcher_name + " v" + launcher_version);
 
         common.initLogic(app);
         mainView.initLogic(app);
@@ -130,6 +137,12 @@ public class SceneController extends Controller {
                 gotoPrev();
             }
         });
+    }
+    public void save(MVCApplication app) {
+        common.save(app);
+        mainView.save(app);
+        accountsView.save(app);
+        addAccountView.save(app);
     }
 
     public boolean hasPrev() {

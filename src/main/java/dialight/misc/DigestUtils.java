@@ -1,6 +1,8 @@
 package dialight.misc;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.CRC32;
@@ -43,8 +45,8 @@ public class DigestUtils {
         return sb.toString();
     }
 
-    public static byte[] digest(String algorithm, File file) {
-        try(FileInputStream is = new FileInputStream(file)) {
+    public static byte[] digest(String algorithm, Path file) {
+        try(InputStream is = Files.newInputStream(file)) {
             MessageDigest digest = MessageDigest.getInstance(algorithm);
             return update(digest, is).digest();
         } catch (NoSuchAlgorithmException | IOException e) {
@@ -71,8 +73,11 @@ public class DigestUtils {
         return digest;
     }
 
-    public static String sha1(File jar) {
+    public static String sha1(Path jar) {
         return toHex(DigestUtils.digest("SHA-1", jar));
+    }
+    public static String sha1(String content) {
+        return toHex(DigestUtils.digest("SHA-1", content.getBytes()));
     }
 
     public static String crc32(byte[] data) {

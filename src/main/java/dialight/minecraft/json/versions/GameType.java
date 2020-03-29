@@ -7,16 +7,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Profile {
+public class GameType {
 
     @SerializedName("id")
     private String id;
+
+    @SerializedName("displayName")
+    private String displayName;
 
     @SerializedName("versionMapping")
     private List<VersionMapEntry> versionMapping;
 
     public String getId() {
         return id;
+    }
+
+    public String getDisplayName() {
+        if(displayName == null) return id;
+        return displayName;
     }
 
     public Map<MCVersion, List<String>> collectVersionMap() {

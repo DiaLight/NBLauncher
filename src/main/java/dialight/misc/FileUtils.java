@@ -8,6 +8,11 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.jar.JarInputStream;
@@ -15,20 +20,25 @@ import java.util.jar.Manifest;
 
 public class FileUtils {
 
-    public static boolean deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
+    public static void deleteDirectory(Path directoryToBeDeleted) throws IOException {
+        Files.walkFileTree(directoryToBeDeleted, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                Files.delete(dir);
+                return FileVisitResult.CONTINUE;
             }
-        }
-        return directoryToBeDeleted.delete();
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 
-    public static void write(InputStream is, long total, File jar, BiConsumer<Long, Long> progress) throws IOException {
+    public static void write(InputStream is, long total, Path jar, BiConsumer<Long, Long> progress) throws IOException {
         int BUF_SIZE = 1024;
         byte[] buf = new byte[BUF_SIZE];
-        try (FileOutputStream os = new FileOutputStream(jar)) {
+        try (OutputStream os = Files.newOutputStream(jar)) {
             long totalRead = 0;
             int read;
             while ((read = is.read(buf, 0, BUF_SIZE)) != -1) {
@@ -38,7 +48,7 @@ public class FileUtils {
             }
         }
     }
-    public static boolean download(String url, File jar, BiConsumer<Long, Long> progress) {
+    public static boolean download(String url, Path jar, BiConsumer<Long, Long> progress) {
         try {
             URLConnection con = new URL(url).openConnection();
             con.setUseCaches(false);

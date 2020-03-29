@@ -19,6 +19,8 @@ public abstract class View {
 
     public abstract void initLogic(MVCApplication app);
 
+    public void save(MVCApplication app) {}
+
     public abstract Parent getRoot();
 
     public <T extends Node> T findById(String id) {

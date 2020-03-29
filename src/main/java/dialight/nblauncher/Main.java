@@ -1,6 +1,6 @@
 package dialight.nblauncher;
 
-import dialight.javafx.ErrorDialog;
+import dialight.minecraft.MinecraftRepo;
 import dialight.mvc.MVCApplication;
 import dialight.mvc.ViewDebug;
 import dialight.nblauncher.controller.AccountsController;
@@ -9,30 +9,30 @@ import dialight.nblauncher.controller.ProgressController;
 import dialight.nblauncher.controller.SceneController;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
+import java.nio.file.Files;
 
 public class Main extends Application {
 
     MVCApplication launcher = new MVCApplication();
+    private NBLauncher nbl;
+    private PrintWriter exceptionsWriter;
 
-    private static void showError(Thread t, Throwable e) {
+    private void showError(Thread t, Throwable e) {
         if (Platform.isFxApplicationThread()) {
-            ErrorDialog.show(e);
+            if(exceptionsWriter == null) {
+                try {
+                    exceptionsWriter = new PrintWriter(Files.newBufferedWriter(nbl.nblPaths.exceptionsFile));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+            e.printStackTrace(exceptionsWriter);
+            exceptionsWriter.flush();
         } else {
             System.err.println("An unexpected error occurred in " + t);
         }
@@ -40,31 +40,35 @@ public class Main extends Application {
 
 
     @Override public void start(Stage primaryStage) throws Exception {
-        Thread.setDefaultUncaughtExceptionHandler(Main::showError);
+        nbl = new NBLauncher(MinecraftRepo.getMinecraftPath());
+        Thread.setDefaultUncaughtExceptionHandler(this::showError);
+
         launcher.registerController(new ProgressController());
-        launcher.registerController(new LauncherController());
-        launcher.registerController(new AccountsController());
+        launcher.registerController(new LauncherController(nbl));
+        launcher.registerController(new AccountsController(nbl));
         launcher.registerController(new SceneController(primaryStage));
-        launcher.registerDone();
 
         SceneController sceneCtl = launcher.findController(SceneController.class);
         AccountsController accountsCtl = launcher.findController(AccountsController.class);
+        LauncherController launcherCtl = launcher.findController(LauncherController.class);
 
         primaryStage.setScene(sceneCtl.getMainScene());
         sceneCtl.initLogic(launcher);
-
-        accountsCtl.loadAccountsSync();
-        if (accountsCtl.getSelectedAccount() == null) {
-            sceneCtl.gotoAddAccount();
-        } else {
-            sceneCtl.gotoMain();
-        }
 
         primaryStage.setMinWidth(primaryStage.getScene().getWidth());
         primaryStage.setMinHeight(primaryStage.getScene().getHeight());
         InputStream iconStream = Main.class.getResourceAsStream("icon.png");
         primaryStage.getIcons().add(new Image(iconStream));
         primaryStage.show();
+
+        launcher.fireInit(() -> {
+            if (accountsCtl.getSelectedAccount() == null) {
+                sceneCtl.gotoAddAccount();
+            } else {
+                sceneCtl.gotoMain();
+            }
+            launcherCtl.loadOnlineVersions(() -> {});
+        });
 
         if(getParameters().getUnnamed().contains("--debug-structure")) {
             ViewDebug.tryRunScenicView(sceneCtl.getMainScene());
@@ -75,7 +79,11 @@ public class Main extends Application {
     }
 
     @Override public void stop() throws Exception {
+        SceneController sceneCtl = launcher.findController(SceneController.class);
+        sceneCtl.save(launcher);
         launcher.findController(AccountsController.class).saveAccountsSync();
+        launcher.findController(LauncherController.class).save();
+        if(exceptionsWriter != null) exceptionsWriter.close();
     }
 
     public static void main(String[] args) {

@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox stylesheets="@style/main.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<VBox stylesheets="@style/main.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox>
          <children>
@@ -23,12 +21,12 @@
                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                  </rowConstraints>
                  <children>
-                     <Label text="Username">
+                     <Label text="Электронная почта">
                <padding>
                   <Insets right="10.0" />
                </padding></Label>
                      <TextField fx:id="username" GridPane.columnIndex="1" />
-                     <Label text="Password" GridPane.rowIndex="1">
+                     <Label text="Пароль" GridPane.rowIndex="1">
                <padding>
                   <Insets right="10.0" />
                </padding></Label>
@@ -42,7 +40,7 @@
              <HBox alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="20.0">
                  <children>
                      <HBox HBox.hgrow="ALWAYS" />
-                     <Button fx:id="login" mnemonicParsing="false" text="Login" />
+                     <Button fx:id="login" mnemonicParsing="false" text="Войти" />
                  </children>
              </HBox>
    </children>

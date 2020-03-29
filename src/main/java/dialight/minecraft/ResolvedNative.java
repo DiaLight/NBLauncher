@@ -3,18 +3,19 @@ package dialight.minecraft;
 import dialight.minecraft.json.Library;
 
 import java.io.File;
+import java.nio.file.Path;
 
 public class ResolvedNative {
 
-    private final File file;
+    private final Path file;
     private final Library library;
 
-    public ResolvedNative(File file, Library library) {
+    public ResolvedNative(Path file, Library library) {
         this.file = file;
         this.library = library;
     }
 
-    public File getFile() {
+    public Path getFile() {
         return file;
     }
 

@@ -2,6 +2,8 @@ package dialight.misc;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +35,37 @@ public class TextUtils {
             throw new RuntimeException(e);
         }
     }
+    public static String readText(Path file) {
+        try {
+            return readText(Files.newInputStream(file), Charset.defaultCharset());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static String readText(Path file, Charset charset) {
+        try {
+            return readText(Files.newInputStream(file), charset);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static void writeText(File file, String content) {
         try(OutputStream os = new FileOutputStream(file)) {
             writeText(os, content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void writeText(Path file, String content) {
+        try(OutputStream os = Files.newOutputStream(file)) {
+            writeText(os, content);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void writeText(Path file, String content, Charset charset) {
+        try(OutputStream os = Files.newOutputStream(file)) {
+            writeText(os, content, charset);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -44,6 +74,13 @@ public class TextUtils {
         try {
             final Charset cs = Charset.defaultCharset();
             os.write(content.getBytes(cs));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void writeText(OutputStream os, String content, Charset charset) {
+        try {
+            os.write(content.getBytes(charset));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

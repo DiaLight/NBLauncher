@@ -11,14 +11,17 @@ public class Versions {
     @SerializedName("versions")
     private List<Version> versions;
 
-    @SerializedName("profiles")
-    private List<Profile> profiles;
+    @SerializedName("gameTypes")
+    private List<GameType> gameTypes;
+
+    @SerializedName("minLauncherVersion")
+    private String minLauncherVersion;
 
     public Versions() {}
 
-    public Versions(List<Version> versions, List<Profile> profiles) {
+    public Versions(List<Version> versions, List<GameType> gameTypes) {
         this.versions = versions;
-        this.profiles = profiles;
+        this.gameTypes = gameTypes;
     }
 
     @NotNull public List<Version> getVersions() {
@@ -26,8 +29,13 @@ public class Versions {
         return versions;
     }
 
-    public List<Profile> getProfiles() {
-        return profiles;
+    public List<GameType> getGameTypes() {
+        if(gameTypes == null) return Collections.emptyList();
+        return gameTypes;
+    }
+
+    public String getMinLauncherVersion() {
+        return minLauncherVersion;
     }
 
 }

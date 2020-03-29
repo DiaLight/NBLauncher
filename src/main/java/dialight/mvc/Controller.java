@@ -2,6 +2,6 @@ package dialight.mvc;
 
 public class Controller {
 
-    protected void init(MVCApplication mvcApplication) {}
+    protected void init(InitCtx ctx, MVCApplication mvcApplication, Runnable done) {}
 
 }

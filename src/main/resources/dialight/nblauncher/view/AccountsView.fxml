@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-     <VBox stylesheets="@style/main.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<VBox stylesheets="@style/main.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
          <children>
       <HBox>
          <children>
@@ -18,7 +14,7 @@
              <HBox alignment="CENTER_LEFT" maxHeight="20.0" prefHeight="20.0">
                  <children>
                      <HBox HBox.hgrow="ALWAYS" />
-                     <Button fx:id="goto_add_account" text="Add" />
+                     <Button fx:id="goto_add_account" text="Добавить" />
                  </children>
              </HBox>
          </children>

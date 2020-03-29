@@ -1,9 +1,7 @@
 package dialight.mvc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MVCApplication {
 
@@ -20,9 +18,11 @@ public class MVCApplication {
         return null;
     }
 
-    public void registerDone() {
+    public void fireInit(Runnable done) {
+        InitCtx ctx = new InitCtx(controllers);
+        ctx.fireInit(this, done);
         for (Controller controller : controllers) {
-            controller.init(this);
+            controller.init(ctx, this, done);
         }
     }
 
