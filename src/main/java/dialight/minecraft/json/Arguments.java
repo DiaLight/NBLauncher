@@ -21,6 +21,11 @@ public class Arguments {
     private List<ArgPart> jvm;
     private boolean complete;
 
+    public Arguments() {
+        game = new ArrayList<>();
+        jvm = new ArrayList<>();
+        complete = false;
+    }
     public Arguments(List<ArgPart> game, List<ArgPart> jvm, boolean complete) {
         this.game = game;
         this.jvm = jvm;
@@ -59,16 +64,20 @@ public class Arguments {
     }
 
     public void inherit(Arguments parent) {
-        if(this.complete) return;
-        if(parent.complete) this.complete = true;
+        if(parent.complete) {
+            this.game = parent.game;
+            this.jvm = parent.jvm;
+            this.complete = true;
+            return;
+        }
 
         if(game == null) game = new ArrayList<>();
         if(!(game instanceof ArrayList)) game = new ArrayList<>(game);
-        if(parent.game != null) game.addAll(0, parent.game);
+        if(parent.game != null) game.addAll(parent.game);
 
         if(jvm == null) jvm = new ArrayList<>();
         if(!(jvm instanceof ArrayList)) jvm = new ArrayList<>(jvm);
-        if(parent.jvm != null) jvm.addAll(0, parent.jvm);
+        if(parent.jvm != null) jvm.addAll(parent.jvm);
     }
 
     public boolean isComplete() {

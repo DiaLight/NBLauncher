@@ -7,11 +7,13 @@ import javafx.scene.control.CheckBox;
 public class ModifierCell {
 
     private final CheckBox checkBox;
-    private final String modifier;
+    private final String displayName;
+    private final String id;
 
-    public ModifierCell(String modifier) {
-        this.modifier = modifier;
-        this.checkBox = new CheckBox(modifier);
+    public ModifierCell(String id, String displayName) {
+        this.id = id;
+        this.checkBox = new CheckBox(displayName);
+        this.displayName = displayName;
         this.checkBox.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
     }
 
@@ -23,8 +25,12 @@ public class ModifierCell {
         checkBox.setSelected(selected);
     }
 
-    public String getModifier() {
-        return modifier;
+    public String getId() {
+        return id;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public Node getGraphic() {

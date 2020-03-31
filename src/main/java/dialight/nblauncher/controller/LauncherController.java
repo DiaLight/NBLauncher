@@ -14,7 +14,6 @@ import dialight.nblauncher.json.GuiPersistence;
 import dialight.nblauncher.tasks.StartMinecraftTask;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import dialight.extensions.CollectionEx;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -29,7 +28,6 @@ public class LauncherController extends Controller {
     private final ObjectProperty<List<GameType>> gameTypes = new SimpleObjectProperty<>(Collections.emptyList());
     private final ObjectProperty<List<String>> modifiers = new SimpleObjectProperty<>(Collections.emptyList());
 
-    private final SimpleObjectProperty<String> selectedVersion = new SimpleObjectProperty<>(null);
     private final Map<String, ETagEntry> etag = new HashMap<>();
     private GuiPersistence guiPersistence = new GuiPersistence();
 
@@ -61,9 +59,6 @@ public class LauncherController extends Controller {
             filtered.put(version.getId(), version);
         }
         this.versions.setValue(filtered);
-        if(selectedVersion.get() == null) {
-            selectedVersion.set(CollectionEx.of(filtered.keySet()).firstOrNull());
-        }
     }
     private void updateGameTypes(List<GameType> gameTypes) {
         for (GameType gameType : gameTypes) {
@@ -81,18 +76,7 @@ public class LauncherController extends Controller {
         return versions.get().get(id);
     }
 
-    public void selectVersion(String version) {
-        selectedVersion.setValue(version);
-    }
-
-    public SimpleObjectProperty<String> selectedVersionProperty() {
-        return selectedVersion;
-    }
-    public String selectedVersion() {
-        return selectedVersion.get();
-    }
-
-    public void startMinecraft() {
+    public void startMinecraft(String version) {
         Objects.requireNonNull(profile.getSelectedAccount());
         profile.validateSelected(isValid -> {
             if(!isValid) {
@@ -104,7 +88,7 @@ public class LauncherController extends Controller {
                             if (!isValid2) {
                                 System.out.println("failed to validate refreshed token");
                             } else {
-                                progress.scheduleTask(startMinecraft_get());
+                                progress.scheduleTask(startMinecraft_get(version));
                             }
                         });
                     } else {
@@ -112,7 +96,7 @@ public class LauncherController extends Controller {
                     }
                 });
             } else {
-                progress.scheduleTask(startMinecraft_get());
+                progress.scheduleTask(startMinecraft_get(version));
             }
         });
     }
@@ -177,7 +161,11 @@ public class LauncherController extends Controller {
 
             @Override protected Versions call() throws Exception {
                 if(!Files.exists(nbl.nblPaths.versionsFile)) return null;
-                return Json.GSON.fromJson(Json.parse(TextUtils.readText(nbl.nblPaths.versionsFile, StandardCharsets.UTF_8)), Versions.class);
+                try {
+                    return Json.GSON.fromJson(Json.parse(TextUtils.readText(nbl.nblPaths.versionsFile, StandardCharsets.UTF_8)), Versions.class);
+                } catch(Exception e) {
+                    return new Versions();
+                }
             }
 
             @Override public void uiDone(@Nullable Versions value) {
@@ -285,9 +273,9 @@ public class LauncherController extends Controller {
         };
     }
 
-    private SimpleTask<Boolean> startMinecraft_get() {
+    private SimpleTask<Boolean> startMinecraft_get(String version) {
         return new StartMinecraftTask(
-                selectedVersion.get(),
+                version,
                 versions.get(),
                 profile.getSelectedAccount(),
                 modifiers.get(),

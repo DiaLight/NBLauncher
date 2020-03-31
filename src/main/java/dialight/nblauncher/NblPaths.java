@@ -1,11 +1,13 @@
 package dialight.nblauncher;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class NblPaths {
 
     public final Path homeDir;
+    public final Path versionsDir;
     public final Path versionsFile;
     public final Path accountsFile;
     public final Path etagFile;
@@ -14,6 +16,7 @@ public class NblPaths {
 
     public NblPaths(Path homeDir) {
         this.homeDir = homeDir;
+        this.versionsDir = this.homeDir.resolve("versions");
         this.versionsFile = this.homeDir.resolve("versions.json");
         this.accountsFile = this.homeDir.resolve("accounts.json");
         this.etagFile = this.homeDir.resolve("etag.json");

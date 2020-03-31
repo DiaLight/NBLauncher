@@ -3,6 +3,7 @@ package dialight.minecraft.json;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,6 +18,11 @@ public class Forge {
     @SerializedName("newModApi")
     private boolean newModApi;
 
+    public Forge() {
+        this.modlist = new ArrayList<>();
+        this.absolutePrefix = false;
+        this.newModApi = false;
+    }
     public Forge(List<ForgeMod> modlist, boolean absolutePrefix, boolean newModApi) {
         this.modlist = modlist;
         this.absolutePrefix = absolutePrefix;
@@ -37,8 +43,7 @@ public class Forge {
     }
 
     public void inherit(Forge parent) {
-        if(this.modlist == null) this.modlist = parent.modlist;
-        else if(parent.modlist != null) modlist.addAll(parent.modlist);
+        if(parent.modlist != null) modlist.addAll(parent.modlist);
         if(!this.absolutePrefix) absolutePrefix = parent.absolutePrefix;
         if(!this.newModApi) newModApi = parent.newModApi;
     }

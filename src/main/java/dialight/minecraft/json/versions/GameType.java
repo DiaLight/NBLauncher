@@ -27,8 +27,8 @@ public class GameType {
         return displayName;
     }
 
-    public Map<MCVersion, List<String>> collectVersionMap() {
-        Map<MCVersion, List<String>> map = new HashMap<>();
+    public Map<MCVersion, List<DisplayEntry>> collectVersionMap() {
+        Map<MCVersion, List<DisplayEntry>> map = new HashMap<>();
         for (VersionMapEntry entry : versionMapping) {
             if(entry.getId() == null) continue;
             if(entry.getVersions() == null || entry.getVersions().isEmpty()) continue;

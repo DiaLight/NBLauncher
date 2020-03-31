@@ -21,6 +21,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -47,7 +48,7 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
         this.modifiers = modifiers;
         this.nbl = nbl;
 
-        this.versionDir = nbl.mcPaths.versionsDir.resolve(id);
+        this.versionDir = nbl.nblPaths.versionsDir.resolve(id);
         this.nativesDir = versionDir.resolve("natives");
     }
 
@@ -77,32 +78,27 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
         if(json == null) throw new IllegalStateException("can't resolve instance config");
         return Json.GSON.fromJson(json, VersionCfg.class);
     }
+    private void applyInherits_impl(String id, List<String> modifiers, VersionCfg out, Set<String> applied) throws Exception {
+        if(applied.contains(id)) return;
+        applied.add(id);
+        VersionCfg current = resolveConfig(id);
+        for (String inh : current.collectInherits()) {
+            applyInherits_impl(inh, modifiers, out, applied);
+        }
+        out.inherit(current);
+        List<ConfigBase> modifiersList = current.getModifiers();
+        for (ConfigBase mod : modifiersList) {
+            if(!modifiers.contains(mod.getId())) continue;
+            out.inherit(mod);
+            for (String modInh : mod.collectInherits()) {
+                applyInherits_impl(modInh, modifiers, out, applied);
+            }
+        }
+    }
     private VersionCfg applyInherits(String id, List<String> modifiers) throws Exception {
         VersionCfg out = new VersionCfg();
-        List<String> read = new ArrayList<>();
-        List<String> write = new ArrayList<>();
         Set<String> applied = new HashSet<>();
-        read.add(id);
-        while(!read.isEmpty()) {
-            for (String inherit : read) {
-                if(applied.contains(inherit)) continue;
-                applied.add(inherit);
-                VersionCfg current = resolveConfig(inherit);
-                Map<String, ConfigBase> modifiersMap = current.getModifiers();
-                for (String modifier : modifiers) {
-                    ConfigBase mod = modifiersMap.get(modifier);
-                    if(mod == null) continue;
-                    out.inherit(mod);
-                    write.addAll(mod.collectInherits());
-                }
-                out.inherit(current);
-                write.addAll(current.collectInherits());
-            }
-            read.clear();
-            List<String> tmp = read;
-            read = write;
-            write = tmp;
-        }
+        applyInherits_impl(id, modifiers, out, applied);
         return out;
     }
 
@@ -521,7 +517,8 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
         for (String arg : args) {
             if(last.equals("-cp")) {
                 String libspath = nbl.mcPaths.libsDir.toString();
-                for (String lib : arg.split(":")) {
+                for (String lib : arg.split(File.pathSeparator)) {
+                    if(!Files.exists(Paths.get(lib))) throw new IllegalStateException("file " + lib + " not exist");
                     if(lib.startsWith(libspath)) lib = lib.substring(libspath.length() + 1);
                     System.out.println("lib: " + lib);
                 }
@@ -549,7 +546,7 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
             }
         } finally {
             for (Path file : toDelete) {
-                Files.delete(file);
+                Files.deleteIfExists(file);
             }
             FileUtils.deleteDirectory(nativesDir);
         }

@@ -4,20 +4,21 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class VersionMapEntry {
+public class DisplayEntry {
 
     @SerializedName("id")
     private String id;
 
-    @SerializedName("versions")
-    private List<DisplayEntry> versions;
+    @SerializedName("displayName")
+    private String displayName;
+
 
     public String getId() {
         return id;
     }
 
-    public List<DisplayEntry> getVersions() {
-        return versions;
+    public String getDisplayName() {
+        return displayName;
     }
 
 }

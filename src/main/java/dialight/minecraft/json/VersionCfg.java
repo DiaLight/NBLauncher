@@ -7,9 +7,6 @@ import java.util.*;
 
 public class VersionCfg extends ConfigBase {
 
-    @SerializedName("id")
-    private String id;
-
     @SerializedName("name")
     private String name;
 
@@ -41,11 +38,7 @@ public class VersionCfg extends ConfigBase {
     private Map<String, Artifact> downloads;
 
     @SerializedName("modifiers")
-    private Map<String, ConfigBase> modifiers;
-
-    public String getId() {
-        return id;
-    }
+    private List<ConfigBase> modifiers;
 
     public String getName() {
         return name;
@@ -87,8 +80,8 @@ public class VersionCfg extends ConfigBase {
         return downloads;
     }
 
-    @NotNull public Map<String, ConfigBase> getModifiers() {
-        if(modifiers == null) return Collections.emptyMap();
+    @NotNull public List<ConfigBase> getModifiers() {
+        if(modifiers == null) return Collections.emptyList();
         return modifiers;
     }
 
@@ -98,16 +91,15 @@ public class VersionCfg extends ConfigBase {
             return;
         }
         VersionCfg parent = (VersionCfg) _parent;
-        if(this.id == null) this.id = parent.id;
-        if(this.name == null) this.name = parent.name;
-        if(this.mainClass == null) this.mainClass = parent.mainClass;
-        if(this.releaseTime == null) this.releaseTime = parent.releaseTime;
-        if(this.time == null) this.time = parent.time;
-        if(this.minimumLauncherVersion == null) this.minimumLauncherVersion = parent.minimumLauncherVersion;
-        if(this.type == null) this.type = parent.type;
-        if(this.assets == null) this.assets = parent.assets;
-        if(this.logging == null) this.logging = parent.logging;
-        if(this.assetIndex == null) this.assetIndex = parent.assetIndex;
+        if(parent.name != null) this.name = parent.name;
+        if(parent.mainClass != null) this.mainClass = parent.mainClass;
+        if(parent.releaseTime != null) this.releaseTime = parent.releaseTime;
+        if(parent.time != null) this.time = parent.time;
+        if(parent.minimumLauncherVersion != null) this.minimumLauncherVersion = parent.minimumLauncherVersion;
+        if(parent.type != null) this.type = parent.type;
+        if(parent.assets != null) this.assets = parent.assets;
+        if(parent.logging != null) this.logging = parent.logging;
+        if(parent.assetIndex != null) this.assetIndex = parent.assetIndex;
         if(parent.downloads != null) {
             if(this.downloads == null) this.downloads = parent.downloads;
             else for (Map.Entry<String, Artifact> entry : parent.downloads.entrySet()) {

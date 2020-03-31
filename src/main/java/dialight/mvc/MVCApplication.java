@@ -21,9 +21,6 @@ public class MVCApplication {
     public void fireInit(Runnable done) {
         InitCtx ctx = new InitCtx(controllers);
         ctx.fireInit(this, done);
-        for (Controller controller : controllers) {
-            controller.init(ctx, this, done);
-        }
     }
 
 

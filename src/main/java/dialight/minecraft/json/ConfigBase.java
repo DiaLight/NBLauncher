@@ -8,6 +8,12 @@ import java.util.List;
 
 public class ConfigBase {
 
+    @SerializedName("id")
+    private String id;
+
+    @SerializedName("displayName")
+    private String displayName;
+
     @SerializedName("inheritsFrom")
     private String inheritsFrom;
 
@@ -25,6 +31,15 @@ public class ConfigBase {
 
     @SerializedName("modsdir")
     private Modsdir modsdir;
+
+    public String getId() {
+        return id;
+    }
+
+    public String getDisplayName() {
+        if(displayName == null) return id;
+        return displayName;
+    }
 
     public List<String> collectInherits() {
         List<String> inherit = new ArrayList<>();
@@ -50,15 +65,18 @@ public class ConfigBase {
     }
 
     public void inherit(ConfigBase parent) {
-        if(this.arguments == null) this.arguments = parent.arguments;
-        else if(parent.arguments != null) arguments.inherit(parent.arguments);
-        if(this.libraries == null) this.libraries = parent.libraries;
-        else if(parent.libraries != null) libraries.addAll(parent.libraries);
-
-        if(this.forge == null) this.forge = parent.forge;
-        else if(parent.forge != null) forge.inherit(parent.forge);
+        if(this.arguments == null) this.arguments = new Arguments();
+        if(this.libraries == null) this.libraries = new ArrayList<>();
+        if(this.forge == null) this.forge = new Forge();
         if(this.modsdir == null) this.modsdir = parent.modsdir;
-        else if(parent.modsdir != null) modsdir.inherit(parent.modsdir);
+
+        if(parent.id != null) this.id = parent.id;
+        if(parent.displayName != null) this.displayName = parent.displayName;
+        if(parent.arguments != null) arguments.inherit(parent.arguments);
+        if(parent.libraries != null) libraries.addAll(0, parent.libraries);
+
+        if(parent.forge != null) forge.inherit(parent.forge);
+        if(parent.modsdir != null) modsdir.inherit(parent.modsdir);
     }
 
 }

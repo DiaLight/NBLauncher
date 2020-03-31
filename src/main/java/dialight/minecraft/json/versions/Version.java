@@ -32,7 +32,7 @@ public class Version {
     private Date releaseTime;
 
     @SerializedName("modifiers")
-    private List<String> modifiers;
+    private List<DisplayEntry> modifiers;
 
     public Version(String id, String type, String url, String sha1, Date time) {
         this.id = id;
@@ -66,7 +66,7 @@ public class Version {
         return releaseTime;
     }
 
-    @NotNull public List<String> getModifiers() {
+    @NotNull public List<DisplayEntry> getModifiers() {
         if(modifiers == null) return Collections.emptyList();
         return modifiers;
     }

@@ -3,7 +3,9 @@ package dialight.nblauncher.view;
 import dialight.extensions.CollectionEx;
 import dialight.javafx.NoSelectionModel;
 import dialight.minecraft.MCVersion;
+import dialight.minecraft.json.versions.DisplayEntry;
 import dialight.minecraft.json.versions.GameType;
+import dialight.minecraft.json.versions.Version;
 import dialight.mvc.MVCApplication;
 import dialight.mvc.View;
 import dialight.mvc.ViewDebug;
@@ -13,21 +15,17 @@ import dialight.nblauncher.controller.ProgressController;
 import dialight.nblauncher.controller.SceneController;
 import dialight.nblauncher.view.launcher.GameTypeCell;
 import dialight.nblauncher.view.launcher.ModifierCell;
+import dialight.nblauncher.view.launcher.VersionCell;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.NodeOrientation;
 import javafx.geometry.Side;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class LauncherView extends View {
 
@@ -38,7 +36,7 @@ public class LauncherView extends View {
 
     private final ComboBox<GameTypeCell> gameTypeList = findById("gametype_list");
     private final ComboBox<MCVersion> mcversionList = findById("mcversion_list");
-    private final ComboBox<String> versionList = findById("version_list");
+    private final ComboBox<VersionCell> versionList = findById("version_list");
 
     private final Button startButton = findById("start_button");
 
@@ -108,11 +106,10 @@ public class LauncherView extends View {
         });
         gameTypeList.valueProperty().bindBidirectional(currentGameType);
         mcversionList.valueProperty().bindBidirectional(currentMCVersion);
-        versionList.valueProperty().bindBidirectional(launcherCtl.selectedVersionProperty());
 
         currentGameType.addListener((observable, oldValue, newValue) -> {
             GameType gameType = newValue != null ? launcherCtl.getGameType(newValue.getId()) : null;
-            Map<MCVersion, List<String>> versionMap = gameType == null ? Collections.emptyMap() : gameType.collectVersionMap();
+            Map<MCVersion, List<DisplayEntry>> versionMap = gameType == null ? Collections.emptyMap() : gameType.collectVersionMap();
             ArrayList<MCVersion> mcVersions = new ArrayList<>(versionMap.keySet());
             mcVersions.sort((o1, o2) -> -o1.compareTo(o2));
             String selectedVersion = null;
@@ -134,19 +131,26 @@ public class LauncherView extends View {
         currentMCVersion.addListener((observable, oldValue, newValue) -> {
             GameTypeCell gameTypeCell = currentGameType.get();
             GameType gameType = gameTypeCell != null ? launcherCtl.getGameType(gameTypeCell.getId()) : null;
-            Map<MCVersion, List<String>> versionMap = gameType == null ? Collections.emptyMap() : gameType.collectVersionMap();
-            List<String> versions = versionMap.getOrDefault(newValue, Collections.emptyList());
+            Map<MCVersion, List<DisplayEntry>> versionMap = gameType == null ? Collections.emptyMap() : gameType.collectVersionMap();
+            List<DisplayEntry> versions = versionMap.getOrDefault(newValue, Collections.emptyList());
             String selectedVersion = null;
             if(gameType != null && newValue != null) {
                 launcherCtl.getGuiPersistence().putMcVersion(gameType.getId(), newValue.toString());
                 selectedVersion = launcherCtl.getGuiPersistence().getVersionMap().get(gameType.getId() + "-" + newValue.toString());
             }
-            if(selectedVersion == null) selectedVersion = CollectionEx.of(versions).firstOrNull();
-            versionList.setItems(FXCollections.observableList(versions));
-            launcherCtl.selectVersion(selectedVersion);
+            VersionCell selected = null;
+            List<VersionCell> items = new ArrayList<>();
+            for (DisplayEntry version : versions) {
+                VersionCell cell = new VersionCell(version.getId(), version.getDisplayName());
+                if(version.getId().equals(selectedVersion)) selected = cell;
+                items.add(cell);
+            }
+            if(selected == null) selected = CollectionEx.of(items).firstOrNull();
+            versionList.setItems(FXCollections.observableList(items));
+            versionList.setValue(selected);
         });
 
-        launcherCtl.selectedVersionProperty().addListener((observable, oldValue, newValue) -> {
+        versionList.valueProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue == null) {
                 versionModifiersLabel.setVisible(false);
                 return;
@@ -154,18 +158,20 @@ public class LauncherView extends View {
             GameTypeCell gameTypeCell = currentGameType.get();
             MCVersion mcVersion = currentMCVersion.get();
             if(gameTypeCell != null && mcVersion != null) {
-                launcherCtl.getGuiPersistence().putVersion(gameTypeCell.getId() + "-" + mcVersion.toString(), newValue);
+                launcherCtl.getGuiPersistence().putVersion(gameTypeCell.getId() + "-" + mcVersion.toString(), newValue.getId());
             }
-            List<String> selectedModifiers = launcherCtl.getGuiPersistence().getModifiersMap().get(newValue);
+            List<String> selectedModifiers = launcherCtl.getGuiPersistence().getModifiersMap().get(newValue.getId());
             List<ModifierCell> modifiers = new ArrayList<>();
-            for (String modifier : launcherCtl.getVersion(newValue).getModifiers()) {
-                modifiers.add(new ModifierCell(modifier));
+            Version version = launcherCtl.getVersion(newValue.getId());
+            if(version == null) throw new NullPointerException("version " + newValue + " not found");
+            for (DisplayEntry modifier : version.getModifiers()) {
+                modifiers.add(new ModifierCell(modifier.getId(), modifier.getDisplayName()));
             }
             versionModifiersLabel.setVisible(!modifiers.isEmpty());
             versionModifiers.setItems(FXCollections.observableList(modifiers));
             if(selectedModifiers != null) {
                 for (ModifierCell modifier : modifiers) {
-                    modifier.setSelected(selectedModifiers.contains(modifier.getModifier()));
+                    modifier.setSelected(selectedModifiers.contains(modifier.getId()));
                 }
             }
         });
@@ -173,13 +179,15 @@ public class LauncherView extends View {
         startButton.visibleProperty().bind(Bindings.createBooleanBinding(() -> accountCtl.getSelectedAccount() != null, accountCtl.selectedAccountProperty()));
 
         startButton.setOnAction(e -> {
+            VersionCell version = versionList.getValue();
+            if (version == null) return;
             List<String> modifiers = new ArrayList<>();
             for (ModifierCell item : versionModifiers.getItems()) {
-                if(item.isSelected()) modifiers.add(item.getModifier());
+                if(item.isSelected()) modifiers.add(item.getId());
             }
-            launcherCtl.getGuiPersistence().putModifiers(launcherCtl.selectedVersion(), modifiers);
+            launcherCtl.getGuiPersistence().putModifiers(version.getId(), modifiers);
             launcherCtl.setModifiers(modifiers);
-            launcherCtl.startMinecraft();
+            launcherCtl.startMinecraft(version.getId());
         });
         startButton.disableProperty().bind(progressCtl.busyProperty());
     }
@@ -188,9 +196,9 @@ public class LauncherView extends View {
         LauncherController launcherCtl = app.findController(LauncherController.class);
         List<String> modifiers = new ArrayList<>();
         for (ModifierCell item : versionModifiers.getItems()) {
-            if(item.isSelected()) modifiers.add(item.getModifier());
+            if(item.isSelected()) modifiers.add(item.getId());
         }
-        launcherCtl.getGuiPersistence().putModifiers(launcherCtl.selectedVersion(), modifiers);
+        launcherCtl.getGuiPersistence().putModifiers(versionList.getValue().getId(), modifiers);
     }
 
     @Override public Parent getRoot() {
