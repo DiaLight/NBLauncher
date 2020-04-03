@@ -129,7 +129,7 @@ public class ProcessIO implements AutoCloseable {
         if(stdoutFuture.isDone() && stderrFuture.isDone()) return false;
         synchronized (event) {
             try {
-                event.wait();
+                event.wait(10000);
             } catch (InterruptedException ignore) {}
         }
         return true;
@@ -138,7 +138,10 @@ public class ProcessIO implements AutoCloseable {
     @Override public void close() throws Exception {
         process.waitFor();
         ioExecutor.shutdown();
-        ioExecutor.awaitTermination(1, TimeUnit.HOURS);
+        if(!ioExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
+            System.out.println("wait timeout. shutdown now");
+            ioExecutor.shutdownNow();
+        }
     }
 
 }

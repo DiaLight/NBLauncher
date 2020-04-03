@@ -20,7 +20,7 @@ public class NblPaths {
         this.versionsFile = this.homeDir.resolve("versions.json");
         this.accountsFile = this.homeDir.resolve("accounts.json");
         this.etagFile = this.homeDir.resolve("etag.json");
-        this.guiPersistence = this.homeDir.resolve("guiPersistence.json");
+        this.guiPersistence = this.homeDir.resolve("gui_persistence.json");
         this.exceptionsFile = this.homeDir.resolve("exceptions.log");
     }
 

@@ -58,10 +58,12 @@ tasks.withType<Jar> {
 val dontCopy by tasks.creating(Copy::class)
 
 launch4j {
+    val version = findProperty("project.version")!!
     mainClassName = application.mainClassName
     icon = "${projectDir}/src/main/resources/dialight/nblauncher/icon.ico"
     copyConfigurable = dontCopy
     libraryDir = "."
     jar = tasks["jar"].outputs.files.singleFile.absolutePath
+    outfile = "${project.name}-$version.exe"
 //    xmlFileName = "${projectDir}/createExe.xml"
 }
