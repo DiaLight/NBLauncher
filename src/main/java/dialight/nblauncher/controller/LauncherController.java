@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 
@@ -76,7 +77,7 @@ public class LauncherController extends Controller {
         return versions.get().get(id);
     }
 
-    public void startMinecraft(String version) {
+    public void startMinecraft(String version, Path gameDir) {
         Objects.requireNonNull(profile.getSelectedAccount());
         profile.validateSelected(isValid -> {
             if(!isValid) {
@@ -88,7 +89,7 @@ public class LauncherController extends Controller {
                             if (!isValid2) {
                                 System.out.println("failed to validate refreshed token");
                             } else {
-                                progress.scheduleTask(startMinecraft_get(version));
+                                progress.scheduleTask(startMinecraft_get(version, gameDir));
                             }
                         });
                     } else {
@@ -96,7 +97,7 @@ public class LauncherController extends Controller {
                     }
                 });
             } else {
-                progress.scheduleTask(startMinecraft_get(version));
+                progress.scheduleTask(startMinecraft_get(version, gameDir));
             }
         });
     }
@@ -273,8 +274,9 @@ public class LauncherController extends Controller {
         };
     }
 
-    private SimpleTask<Boolean> startMinecraft_get(String version) {
+    private SimpleTask<Boolean> startMinecraft_get(String version, Path gameDir) {
         return new StartMinecraftTask(
+                gameDir,
                 version,
                 versions.get(),
                 profile.getSelectedAccount(),

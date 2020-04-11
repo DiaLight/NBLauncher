@@ -3,7 +3,7 @@ package dialight.nblauncher.controller;
 
 import dialight.minecraft.MinecraftAccount;
 import dialight.minecraft.Yggdrassil;
-import dialight.minecraft.json.AccountsState;
+import dialight.nblauncher.json.AccountsState;
 import dialight.misc.*;
 import dialight.mvc.Controller;
 import dialight.mvc.InitCtx;

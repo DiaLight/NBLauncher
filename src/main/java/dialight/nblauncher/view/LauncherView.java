@@ -2,6 +2,7 @@ package dialight.nblauncher.view;
 
 import dialight.extensions.CollectionEx;
 import dialight.javafx.NoSelectionModel;
+import dialight.minecraft.MCPaths;
 import dialight.minecraft.MCVersion;
 import dialight.minecraft.json.versions.DisplayEntry;
 import dialight.minecraft.json.versions.GameType;
@@ -9,10 +10,7 @@ import dialight.minecraft.json.versions.Version;
 import dialight.mvc.MVCApplication;
 import dialight.mvc.View;
 import dialight.mvc.ViewDebug;
-import dialight.nblauncher.controller.AccountsController;
-import dialight.nblauncher.controller.LauncherController;
-import dialight.nblauncher.controller.ProgressController;
-import dialight.nblauncher.controller.SceneController;
+import dialight.nblauncher.controller.*;
 import dialight.nblauncher.view.launcher.GameTypeCell;
 import dialight.nblauncher.view.launcher.ModifierCell;
 import dialight.nblauncher.view.launcher.VersionCell;
@@ -25,6 +23,9 @@ import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class LauncherView extends View {
@@ -65,6 +66,7 @@ public class LauncherView extends View {
     @Override public void initLogic(MVCApplication app) {
         LauncherController launcherCtl = app.findController(LauncherController.class);
         AccountsController accountCtl = app.findController(AccountsController.class);
+        SettingsController settingsCtl = app.findController(SettingsController.class);
         SceneController sceneCtl = app.findController(SceneController.class);
         ProgressController progressCtl = app.findController(ProgressController.class);
 
@@ -76,9 +78,15 @@ public class LauncherView extends View {
             });
 
             {
-                MenuItem accounts = new MenuItem("Аккаунты");
-                accounts.setOnAction(event -> sceneCtl.gotoAccounts());
-                contextMenu.getItems().add(accounts);
+                MenuItem item = new MenuItem("Аккаунты");
+                item.setOnAction(event -> sceneCtl.gotoAccounts());
+                contextMenu.getItems().add(item);
+            }
+
+            {
+                MenuItem item = new MenuItem("Настрйки");
+                item.setOnAction(event -> sceneCtl.gotoSettings());
+                contextMenu.getItems().add(item);
             }
 
             {
@@ -187,7 +195,12 @@ public class LauncherView extends View {
             }
             launcherCtl.getGuiPersistence().putModifiers(version.getId(), modifiers);
             launcherCtl.setModifiers(modifiers);
-            launcherCtl.startMinecraft(version.getId());
+
+            if(settingsCtl.validate()) {
+                launcherCtl.startMinecraft(version.getId(), settingsCtl.getGameDirPath());
+            } else {
+                sceneCtl.gotoSettings();
+            }
         });
         startButton.disableProperty().bind(progressCtl.busyProperty());
     }

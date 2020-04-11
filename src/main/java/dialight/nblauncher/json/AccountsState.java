@@ -1,4 +1,4 @@
-package dialight.minecraft.json;
+package dialight.nblauncher.json;
 
 import com.google.gson.annotations.SerializedName;
 import dialight.minecraft.MinecraftAccount;

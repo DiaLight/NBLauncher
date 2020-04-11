@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.internal.JavaVersion;
 import dialight.minecraft.LibName;
+import dialight.minecraft.MCPaths;
 import dialight.minecraft.MinecraftAccount;
 import dialight.minecraft.ResolvedNative;
 import dialight.minecraft.json.*;
@@ -32,6 +33,7 @@ import java.util.zip.ZipFile;
 
 public class StartMinecraftTask extends SimpleTask<Boolean> {
 
+    private final Path gameDir;
     private final String id;
     private final Map<String, Version> versions;
     private final MinecraftAccount profile;
@@ -41,7 +43,8 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
     private final Path versionDir;
     private final Path nativesDir;
 
-    public StartMinecraftTask(String id, Map<String, Version> versions, MinecraftAccount profile, List<String> modifiers, NBLauncher nbl) {
+    public StartMinecraftTask(Path gameDir, String id, Map<String, Version> versions, MinecraftAccount profile, List<String> modifiers, NBLauncher nbl) {
+        this.gameDir = gameDir;
         this.id = id;
         this.versions = versions;
         this.profile = profile;
@@ -340,7 +343,8 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
         cfg.put("${auth_access_token}", profile.getAccessToken());
         cfg.put("${user_type}", "mojang");
         cfg.put("${user_properties}", "{}");
-        cfg.put("${game_directory}", nbl.homeDir.toAbsolutePath().toString());
+        cfg.put("${game_directory}", gameDir.toAbsolutePath().toString());
+        cfg.put("${game_libraries}", nbl.mcPaths.libsDir.toAbsolutePath().toString());
         cfg.put("${assets_index_name}", versionCfg.getAssetIndex().getId());
         cfg.put("${version_name}", id);
         cfg.put("${version_type}", versionCfg.getType());
@@ -459,7 +463,7 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
 
         List<Path> toDelete = new ArrayList<>();
         if (versionCfg.getForge() != null) {
-            Path modsDir = nbl.homeDir.resolve("mods");
+            Path modsDir = gameDir.resolve("mods");
             Files.createDirectories(modsDir);
             List<String> names = new ArrayList<>();
             for (ForgeMod mod : versionCfg.getForge().getModlist()) {
@@ -494,7 +498,7 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
                     String modlistJson = modlist.toString();
 
                     String modlistPath = "tempModList-" + DigestUtils.crc32(modlistJson.getBytes());
-                    Path modlistFile = nbl.homeDir.resolve(modlistPath);
+                    Path modlistFile = gameDir.resolve(modlistPath);
                     TextUtils.writeText(modlistFile, modlistJson, StandardCharsets.UTF_8);
                     args.addAll(Arrays.asList("--modListFile", modlistPath));
                     toDelete.add(modlistFile);
@@ -502,7 +506,7 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
             }
         }
         if (versionCfg.getModsdir() != null) {
-            Path modsDir = nbl.homeDir.resolve("mods");
+            Path modsDir = gameDir.resolve("mods");
             Files.createDirectories(modsDir);
             for (Library mod : versionCfg.getModsdir().getModlist()) {
                 Path source = nbl.mcPaths.libsDir.resolve(mod.resolvePath());
@@ -532,7 +536,7 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
 
         updateMessage("starting minecraft");
         Process process = new ProcessBuilder(args)
-                .directory(nbl.homeDir.toFile())
+                .directory(gameDir.toFile())
                 .start();
         try(ProcessIO io = new ProcessIO(process)) {
             while (io.waitForIO() || io.hasIO()) {

@@ -3,10 +3,7 @@ package dialight.nblauncher;
 import dialight.minecraft.MinecraftRepo;
 import dialight.mvc.MVCApplication;
 import dialight.mvc.ViewDebug;
-import dialight.nblauncher.controller.AccountsController;
-import dialight.nblauncher.controller.LauncherController;
-import dialight.nblauncher.controller.ProgressController;
-import dialight.nblauncher.controller.SceneController;
+import dialight.nblauncher.controller.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -45,6 +42,7 @@ public class Main extends Application {
 
         launcher.registerController(new ProgressController());
         launcher.registerController(new LauncherController(nbl));
+        launcher.registerController(new SettingsController(nbl));
         launcher.registerController(new AccountsController(nbl));
         launcher.registerController(new SceneController(primaryStage));
 
@@ -81,6 +79,7 @@ public class Main extends Application {
     @Override public void stop() throws Exception {
         SceneController sceneCtl = launcher.findController(SceneController.class);
         sceneCtl.save(launcher);
+        launcher.findController(SettingsController.class).saveSettingsSync();
         launcher.findController(AccountsController.class).saveAccountsSync();
         launcher.findController(LauncherController.class).save();
         if(exceptionsWriter != null) exceptionsWriter.close();

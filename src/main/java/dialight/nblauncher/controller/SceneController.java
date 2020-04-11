@@ -4,10 +4,7 @@ import dialight.misc.FileUtils;
 import dialight.mvc.Controller;
 import dialight.mvc.MVCApplication;
 import dialight.mvc.View;
-import dialight.nblauncher.view.AddAccountView;
-import dialight.nblauncher.view.Common;
-import dialight.nblauncher.view.LauncherView;
-import dialight.nblauncher.view.AccountsView;
+import dialight.nblauncher.view.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
@@ -31,6 +28,7 @@ public class SceneController extends Controller {
     private final View mainView = new LauncherView();
     private final View accountsView = new AccountsView();
     private final View addAccountView = new AddAccountView();
+    private final View settingsView = new SettingsView();
     private final Scene mainScene = new Scene(common.getRoot(), 600, 400);
     private final LinkedList<View> viewStack = new LinkedList<>();
     private final BooleanProperty hasPrev = new SimpleBooleanProperty(false);
@@ -53,6 +51,10 @@ public class SceneController extends Controller {
 
     public void gotoAccounts() {
         gotoView(accountsView);
+    }
+
+    public void gotoSettings() {
+        gotoView(settingsView);
     }
     public void gotoAddAccount() {
         gotoView(addAccountView);
@@ -127,10 +129,12 @@ public class SceneController extends Controller {
         mainView.initLogic(app);
         accountsView.initLogic(app);
         addAccountView.initLogic(app);
+        settingsView.initLogic(app);
 
         mainView.getRoot().getStylesheets().clear();
         accountsView.getRoot().getStylesheets().clear();
         addAccountView.getRoot().getStylesheets().clear();
+        settingsView.getRoot().getStylesheets().clear();
 
         mainScene.addEventFilter(KeyEvent.KEY_PRESSED, t -> {
             if(t.getCode() == KeyCode.ESCAPE) {
@@ -143,6 +147,7 @@ public class SceneController extends Controller {
         mainView.save(app);
         accountsView.save(app);
         addAccountView.save(app);
+        settingsView.save(app);
     }
 
     public boolean hasPrev() {
