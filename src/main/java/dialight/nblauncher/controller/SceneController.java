@@ -4,7 +4,9 @@ import dialight.misc.FileUtils;
 import dialight.mvc.Controller;
 import dialight.mvc.MVCApplication;
 import dialight.mvc.View;
+import dialight.nblauncher.Main;
 import dialight.nblauncher.view.*;
+import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.EventHandler;
@@ -23,18 +25,25 @@ import java.util.jar.Manifest;
 
 public class SceneController extends Controller {
 
+    private final Application app;
     private final Stage stage;
     private final Common common = new Common();
     private final View mainView = new LauncherView();
     private final View accountsView = new AccountsView();
     private final View addAccountView = new AddAccountView();
     private final View settingsView = new SettingsView();
+    private final View upgradeView = new UpgradeView();
     private final Scene mainScene = new Scene(common.getRoot(), 600, 400);
     private final LinkedList<View> viewStack = new LinkedList<>();
     private final BooleanProperty hasPrev = new SimpleBooleanProperty(false);
 
-    public SceneController(Stage stage) {
+    public SceneController(Application app, Stage stage) {
+        this.app = app;
         this.stage = stage;
+    }
+
+    public Application getApp() {
+        return app;
     }
 
     public Stage getStage() {
@@ -55,6 +64,9 @@ public class SceneController extends Controller {
 
     public void gotoSettings() {
         gotoView(settingsView);
+    }
+    public void gotoUpgrade() {
+        gotoView(upgradeView);
     }
     public void gotoAddAccount() {
         gotoView(addAccountView);
@@ -130,11 +142,13 @@ public class SceneController extends Controller {
         accountsView.initLogic(app);
         addAccountView.initLogic(app);
         settingsView.initLogic(app);
+        upgradeView.initLogic(app);
 
         mainView.getRoot().getStylesheets().clear();
         accountsView.getRoot().getStylesheets().clear();
         addAccountView.getRoot().getStylesheets().clear();
         settingsView.getRoot().getStylesheets().clear();
+        upgradeView.getRoot().getStylesheets().clear();
 
         mainScene.addEventFilter(KeyEvent.KEY_PRESSED, t -> {
             if(t.getCode() == KeyCode.ESCAPE) {
@@ -148,6 +162,7 @@ public class SceneController extends Controller {
         accountsView.save(app);
         addAccountView.save(app);
         settingsView.save(app);
+        upgradeView.save(app);
     }
 
     public boolean hasPrev() {

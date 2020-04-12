@@ -1,9 +1,14 @@
 package dialight.nblauncher;
 
 import dialight.minecraft.MinecraftRepo;
+import dialight.minecraft.json.versions.Versions;
+import dialight.misc.FileUtils;
+import dialight.misc.HttpRequest;
+import dialight.misc.Json;
 import dialight.mvc.MVCApplication;
 import dialight.mvc.ViewDebug;
 import dialight.nblauncher.controller.*;
+import dialight.nblauncher.json.GithubRelease;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -11,6 +16,8 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 public class Main extends Application {
 
@@ -41,14 +48,16 @@ public class Main extends Application {
         Thread.setDefaultUncaughtExceptionHandler(this::showError);
 
         launcher.registerController(new ProgressController());
+        launcher.registerController(new UpgradeController(nbl));
         launcher.registerController(new LauncherController(nbl));
         launcher.registerController(new SettingsController(nbl));
         launcher.registerController(new AccountsController(nbl));
-        launcher.registerController(new SceneController(primaryStage));
+        launcher.registerController(new SceneController(this, primaryStage));
 
         SceneController sceneCtl = launcher.findController(SceneController.class);
         AccountsController accountsCtl = launcher.findController(AccountsController.class);
         LauncherController launcherCtl = launcher.findController(LauncherController.class);
+        UpgradeController upgradeCtl = launcher.findController(UpgradeController.class);
 
         primaryStage.setScene(sceneCtl.getMainScene());
         sceneCtl.initLogic(launcher);
@@ -63,7 +72,11 @@ public class Main extends Application {
             if (accountsCtl.getSelectedAccount() == null) {
                 sceneCtl.gotoAddAccount();
             } else {
-                sceneCtl.gotoMain();
+                if (upgradeCtl.isLatest()) {
+                    sceneCtl.gotoMain();
+                } else {
+                    sceneCtl.gotoUpgrade();
+                }
             }
             launcherCtl.loadOnlineVersions(() -> {});
         });

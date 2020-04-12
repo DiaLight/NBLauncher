@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.internal.JavaVersion;
 import dialight.minecraft.LibName;
-import dialight.minecraft.MCPaths;
 import dialight.minecraft.MinecraftAccount;
 import dialight.minecraft.ResolvedNative;
 import dialight.minecraft.json.*;
@@ -363,7 +362,7 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
         features.put("has_custom_resolution", false);
 
         Arguments arguments = versionCfg.getArguments();
-        if(arguments.getJvm().isEmpty()) {
+        if(arguments.isLegacy()) {
             List<ArgPart> jvm = new ArrayList<>();
             jvm.add(new RuleArg(Collections.singletonList(new Rule(Rule.Action.ALLOW, new Os(Os.Name.WINDOWS))), Collections.singletonList("-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump")));
             jvm.add(new RuleArg(Collections.singletonList(new Rule(Rule.Action.ALLOW, new Os(Os.Name.WINDOWS, "^10\\."))), Arrays.asList("-Dos.name=Windows 10", "-Dos.version=10.0")));
@@ -372,7 +371,8 @@ public class StartMinecraftTask extends SimpleTask<Boolean> {
             jvm.add(new StringArg("-Dminecraft.launcher.version=${launcher_version}"));
             jvm.add(new StringArg("-cp"));
             jvm.add(new StringArg("${classpath}"));
-            arguments = new Arguments(arguments.getGame(), jvm, arguments.isComplete());
+            jvm.addAll(arguments.getJvm());
+            arguments = new Arguments(arguments.getGame(), jvm, false);
         }
         List<ArgPart> jvm = arguments.getJvm();
         jvm.add(new StringArg("-Dminecraft.client.jar=${game_jar}"));

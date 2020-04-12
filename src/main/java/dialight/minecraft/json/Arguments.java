@@ -2,34 +2,27 @@ package dialight.minecraft.json;
 
 
 import dialight.minecraft.json.args.ArgPart;
-import dialight.minecraft.json.args.RuleArg;
-import dialight.minecraft.json.args.StringArg;
-import dialight.minecraft.json.libs.Os;
-import dialight.minecraft.json.libs.Rule;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Arguments {
 
     private List<ArgPart> game;
     private List<ArgPart> jvm;
-    private boolean complete;
+    private boolean legacy;
 
-    public Arguments() {
-        game = new ArrayList<>();
-        jvm = new ArrayList<>();
-        complete = false;
+    public Arguments(boolean legacy) {
+        this.game = new ArrayList<>();
+        this.jvm = new ArrayList<>();
+        this.legacy = legacy;
     }
-    public Arguments(List<ArgPart> game, List<ArgPart> jvm, boolean complete) {
+    public Arguments(List<ArgPart> game, List<ArgPart> jvm, boolean legacy) {
         this.game = game;
         this.jvm = jvm;
-        this.complete = complete;
+        this.legacy = legacy;
     }
 
     public static List<String> bakeArgs(List<ArgPart> arguments, Function<String, String> keyMap, BiPredicate<String, Boolean> featureMatcher) {
@@ -64,10 +57,10 @@ public class Arguments {
     }
 
     public void inherit(Arguments parent) {
-        if(parent.complete) {
+        if(parent.legacy) {
             this.game = parent.game;
             this.jvm = parent.jvm;
-            this.complete = true;
+            this.legacy = true;
             return;
         }
 
@@ -80,8 +73,8 @@ public class Arguments {
         if(parent.jvm != null) jvm.addAll(parent.jvm);
     }
 
-    public boolean isComplete() {
-        return this.complete;
+    public boolean isLegacy() {
+        return this.legacy;
     }
 
 }

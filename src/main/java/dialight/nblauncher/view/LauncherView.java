@@ -84,7 +84,7 @@ public class LauncherView extends View {
             }
 
             {
-                MenuItem item = new MenuItem("Настрйки");
+                MenuItem item = new MenuItem("Настройки");
                 item.setOnAction(event -> sceneCtl.gotoSettings());
                 contextMenu.getItems().add(item);
             }

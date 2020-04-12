@@ -65,7 +65,7 @@ public class ConfigBase {
     }
 
     public void inherit(ConfigBase parent) {
-        if(this.arguments == null) this.arguments = new Arguments();
+        if(this.arguments == null) this.arguments = new Arguments(parent.getArguments().isLegacy());
         if(this.libraries == null) this.libraries = new ArrayList<>();
         if(this.forge == null) this.forge = new Forge();
         if(this.modsdir == null) this.modsdir = parent.modsdir;

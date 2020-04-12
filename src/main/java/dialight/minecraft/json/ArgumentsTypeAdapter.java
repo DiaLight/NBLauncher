@@ -22,7 +22,9 @@ public class ArgumentsTypeAdapter implements JsonDeserializer<Arguments> {
     @Override public Arguments deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         if (json.isJsonPrimitive()) {
             return new Arguments(
-                    Arrays.stream(json.getAsString().split(" ")).map(StringArg::new).collect(Collectors.toList()),
+                    Arrays.stream(json.getAsString().split(" "))
+                            .map(StringArg::new)
+                            .collect(Collectors.toList()),
                     Collections.emptyList(),
                     true
             );

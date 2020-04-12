@@ -89,7 +89,7 @@ public class SettingsController extends Controller {
         return new SimpleTask<SettingsJson>() {
 
             @Override public void uiInit() {
-                updateMessage("load accounts");
+                updateMessage("load settings");
             }
 
             @Override protected SettingsJson call() throws Exception {
@@ -114,7 +114,7 @@ public class SettingsController extends Controller {
             private String gameDir;
 
             @Override public void uiInit() {
-                updateMessage("save accounts");
+                updateMessage("save settings");
                 gameDir = SettingsController.this.gameDir.getValue();
             }
 
